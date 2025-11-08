@@ -18,13 +18,15 @@
     /* Border radius for ui elements */
     --border-radius: 5px;
 }
+
+
 body{
     font-family: "Roboto";
     background: var(--c-primary);
 }
 
 /* Wrapper for file upload fields */
-.file-upload {
+.file-upload-container {
     background-color: var(--color-ui);
     width: 600px;
     margin: 0 auto;

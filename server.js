@@ -8,7 +8,7 @@ const express = require('express')
 const fs = require('fs')
 const multer = require('multer')
 
-const {parseFitFile} = require(path.join(__dirname, 'public/src/fit_parser.js'))
+const {parseFitFile, getGpsPoints} = require(path.join(__dirname, 'src/fit_parser.js'))
 
 // Ensure uploads directory exists, create it if it doesn't
 const uploadDir = path.join(__dirname, '/uploads');
@@ -53,19 +53,25 @@ async function handleFileUpload(request, response) {
     });
     // This will hold the status for the renaming of each file
     const status = await Promise.all(renamePromises);
-    // Renaming finished, send a response with the status for each file
-    response.json({status});
-    // Parse the files
+
+    // Renaming finished, start parsing the files
     const filenames = await fs.promises.readdir(uploadDir);
-    const parsePromises = filenames.map(filename => {
+    const parsePromises = filenames.map(async filename => {
         const filepath = path.join(__dirname + '/uploads', filename);
         console.log(`Currently parsing ${filepath}`);
-        return parseFitFile(filepath)
-            .then(data => ({file: filename, parsed: true, data}))
-            .catch(err => ({file: filename, error: err}));
+        try {
+            const parsedData = await parseFitFile(filepath); // Raw parsed .fit file object
+            const points = getGpsPoints(parsedData, filepath); // Simplified array of points
+            return {file: filename, parsed: true, parsed_data: parsedData, points: points};
+        } catch (err) {
+            return {file: filename, error: err};
+        }
     });
     const parseResults = await Promise.all(parsePromises);
     console.log('Parsing results: ', parseResults);
+
+    // Send a response with the file renamning status and the results from parsing (includes the simplified array of points)
+    response.json({status, parseResults});
 }
 
 // Start the server on some port

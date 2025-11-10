@@ -70,8 +70,8 @@ function getGpsPoints(data) {
             for (const record of lap.records) {
                 if (typeof record.position_lat !== 'undefined' && typeof record.position_long !== 'undefined') { // Make sure the current record actually contains position data
                 points.push({
-                    lat: semicirclesToDeg(record.position_lat),
-                    long: semicirclesToDeg(record.position_long),
+                    lat: record.position_lat,
+                    long: record.position_long,
                     timestamp: record.timeStamp || null,
                     altitude: record.altitude || null,
                     heart_rate: record.heart_rate || null

@@ -95,7 +95,19 @@ body{
 }
 
 /* Leafly map */
+.map-container {
+    height: 550px;
+    width: 550px;
+    margin: 24px auto;
+    border-radius: 6px;
+    background-color: var(--color-accent);
+}
+
 #map {
-    height: 100%;
-    width: 100%;
+    margin: auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 525px;
+    width: 525px;
 }

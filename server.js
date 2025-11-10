@@ -56,6 +56,7 @@ async function handleFileUpload(request, response) {
 
     // Renaming finished, start parsing the files
     const filenames = await fs.promises.readdir(uploadDir);
+    
     const parsePromises = filenames.map(async filename => {
         const filepath = path.join(__dirname + '/uploads', filename);
         console.log(`Currently parsing ${filepath}`);
@@ -68,7 +69,6 @@ async function handleFileUpload(request, response) {
         }
     });
     const parseResults = await Promise.all(parsePromises);
-    console.log('Parsing results: ', parseResults);
 
     // Send a response with the file renamning status and the results from parsing (includes the simplified array of points)
     response.json({status, parseResults});

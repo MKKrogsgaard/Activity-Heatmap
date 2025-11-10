@@ -1,3 +1,24 @@
+
+/**
+ * Extends this Array with other_array in-place by pushing each element of other_array to this Array.
+ * @param {<Array>} other_array - The array with which to extend this array
+ * @example
+ * // a, b, c and d can be any objects
+ * arr1 = [a, b];
+ * arr2 = [c, d];
+ * arr1.extend(arr2) // = [a, b, c, d]
+ */
+Array.prototype.extend = function extend(other_array) {
+    // Check if other_array is an array
+    if (!Array.isArray(other_array)){
+        console.warn(`Failed to extend [${this}] - other object is not an Array!`);
+        return
+    }
+    other_array.forEach(element => {
+        this.push(element);
+    });
+}
+
 function submitFiles(input) {
     /**
      * Accepts either a filelist or an <input> element with a .files attribute.
@@ -28,21 +49,64 @@ function submitFiles(input) {
         method: 'POST',
         body: formData
     })
-    // Log the result of the upload
-    .then((result) => console.log(result))
-    // Log errors if they occur
-    .catch((err) => console.error('An error ocurred', err))
+    .then((result) => result.json()) // The server sent back a JSON of the parsed data and the points, read it
+    .then(json => {
+        // Grab the results
+        parseResults = json.parseResults;
+        console.log('Results after parsing: ', parseResults);
+
+        // Validate points before trying to make a heatmap
+        const validPoints = []; // Will be [[lat, long, intensity], ...]
+        const invalidPoints = [];
+        parseResults.forEach(result => {
+            for (const point of result.points) {
+                // Check if the coords are finite, and if they are valid latitudes/longtitudes
+                if ((Number.isFinite(point.lat) && Number.isFinite(point.long)) &&
+                    (point.lat >= -90 && point.lat <= 90) && (point.long >= -180 && point.long <= 180)) {
+                        validPoints.extend([[point.lat, point.long, 1]]);
+                } else {
+                    invalidPoints.extend([[point.lat, point.long, 1]]);
+                }
+            }
+        });
+        // Log invalid points for debugging
+        percentage_valid = validPoints.length / (validPoints.length + invalidPoints.length) * 100
+        console.log(`Number of valid points: ${validPoints.length} (${percentage_valid}%)`);
+        console.log('Valid points', validPoints)
+        console.log(`Number of invalid points: ${invalidPoints.length} (${100 - percentage_valid}%)`);
+        console.log('Invalid points', invalidPoints);
+
+        // Make the heatmap with the valid points
+        makeHeatMap(validPoints);
+    });
 }
 
 /**
  * Takes in GPS points and makes a heatmap
- * @param {<Array>} runs - An array where each entry is the set of points associated with a run
+ * @param {<Array>} points - An array of [lat, long, intensity] points for the heatmap
  */
-function makeHeatMap(runs) {
-    // Extract all of the GPS points from the runs
-    const points = [];
-    // Initialize heatmap centered on the first point
-    const map = L.map('map', {
+function makeHeatMap(points) {
 
+    if (!Array.isArray(points) || points.length == 0) {
+        console.error('makeHeatMap: No points provided, or points not an Array!');
+    }
+
+    // Initialize map centered on the first point
+    console.log('Initial map center: ', [points[0][0], points [0][1]]);
+    const map = L.map('map', {
+        center: [points[0][0], points [0][1]],
+        zoom: 10
     });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    console.log('Leaflet map initialized!');
+
+    // Add heatmap layer
+    let heat = L.heatLayer(points, {
+        radius: 5,
+        blur: 5
+    }).addTo(map);
+    console.log('Heatmap drawn!');
 }

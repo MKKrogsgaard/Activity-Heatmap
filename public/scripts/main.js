@@ -27,9 +27,6 @@ let leafletMap = null;
 let heatLayer = null;
 
 function submitFiles(input) {
-    //Show loader
-    $('#loader').removeClass('hide');
-    $('#content').addClass('hide')
     /**
      * Accepts either a filelist or an <input> element with a .files attribute.
      */

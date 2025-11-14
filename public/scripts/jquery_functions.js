@@ -13,6 +13,9 @@ $(document).ready(function(){
 
     // Event listener for file uploads (when the user drops files into the wrapper)
     $('.file-upload-wrapper').on('drop', function(event) {
+        //Show loader
+        $('#loader').removeClass('hide');
+        $('#content').addClass('hide');
         event.preventDefault(); // Prevent the default action that the browser takes when a form is submitted
         event.stopPropagation(); // Stops the event from traveling up the hierarchy of elements (so listeners on parent elements don't trigger)
         $('.file-upload-wrapper').removeClass('file-dropping') // Get rid of the dropping styling
@@ -27,11 +30,17 @@ $(document).ready(function(){
 
     // Event listener for file uploads (when the user picks files via the file selector)
     $('.file-upload-input').on('change', function() {
+        //Show loader
+        $('#loader').removeClass('hide');
+        $('#content').addClass('hide');
         submitFiles(this);
     });
 
     // Event listener for the ''generate heatmap with test data'' button
     $('.file-upload-button').on('click', async function() {
+        //Show loader
+        $('#loader').removeClass('hide');
+        $('#content').addClass('hide');
         testDir = '/test_data';
         const response = await fetch('public/test_data/list'); // Get the names of the test files from the server
 

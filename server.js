@@ -83,8 +83,13 @@ async function handleFileUpload(request, response) {
     response.json({parseResults});
 }
 
-// Start the server on some port
-port = 5000
+// Required by Heroku
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 5000; // If running on local machine
+}
+app.listen(port);
+
 server = app.listen(port, function() {
     console.log(`Server is running on port ${port}`)
 });

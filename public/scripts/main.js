@@ -85,7 +85,7 @@ function submitFiles(input) {
 
         // Get rid of the loader
         $('#loader').addClass('hide');
-        $('#content').removeClass('hide')
+        $('#content').addClass('show');
     });
 }
 

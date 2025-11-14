@@ -94,9 +94,9 @@ server = app.listen(port, function() {
     console.log(`Server is running on port ${port}`)
 });
 
-function graceFullShutdown() {
+function gracefulShutdown() {
     console.log('Server shutting down...');
-    server.close(function() {
+    server.close((err) => {
         console.log('Deleting files in uploads folder...');
         // Delete all files in the uploads folder
         const dir = __dirname + '/uploads';
@@ -111,11 +111,17 @@ function graceFullShutdown() {
                     }
                 });
             }
-        })
-        console.log("Server closed");
+        });
+        if (err) {
+            console.error('There was an error closing the server', err.message);
+            process.exit(1);
+        } else {
+            console.error('Server closed succesfully');
+            process.exit(0);
+        }
     });
 }
 
 // Execute graceful shutdown when the server is closed
-process.on('SIGTERM', graceFullShutdown);
-process.on('SIGINT', graceFullShutdown);
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);

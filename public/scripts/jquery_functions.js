@@ -1,7 +1,9 @@
 // Only run these when the page has finished loading
 $(document).ready(function(){
+    // Hide the loader when the page has finished loading
     $('#loader').addClass('hide');
-    // Global variables
+    $('#content').addClass('show');
+    
 
     // Add/remove file dropping styling to the file upload field if the user is hovering over it with a file in hand
     $('.file-upload-wrapper').bind('dragover', function() {
@@ -32,7 +34,7 @@ $(document).ready(function(){
     $('.file-upload-input').on('change', function() {
         //Show loader
         $('#loader').removeClass('hide');
-        $('#content').addClass('hide');
+        $('#content').removeClass('show');
         submitFiles(this);
     });
 
@@ -40,7 +42,7 @@ $(document).ready(function(){
     $('.file-upload-button').on('click', async function() {
         //Show loader
         $('#loader').removeClass('hide');
-        $('#content').addClass('hide');
+        $('#content').removeClass('show');
         testDir = '/test_data';
         const response = await fetch('public/test_data/list'); // Get the names of the test files from the server
 

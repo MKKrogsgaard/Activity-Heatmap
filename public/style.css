@@ -6,6 +6,7 @@
     --color-seconday: #f4d35e;
     --color-seconday-brightened: #ffdd63;
     --color-seconday-darkened: #dfc157;
+    --color-seconday-darkened-darkened: #ad9744;
 
     --color-accent: #0d3b66;
     --color-accent-brightened: #10487e;
@@ -31,16 +32,17 @@ body{
 
 .content {
     flex: 1;
+    opacity: 0.5;
 }
 
-.content.hide {
-    opacity: 0.5;
+.content.show {
+    opacity: 1;
 }
 
 
 /* Wrapper for file upload fields */
 .file-upload-container {
-    background-color: var(--color-ui);
+    background-color: var(--color-seconday-brightened);
     width: 600px;
     margin: 20px auto;
     padding: 20px;
@@ -69,8 +71,8 @@ body{
     cursor: pointer;
 }
 .file-upload-button:active {
-  border: 0;
-  transition: all .2s ease;
+    border: 0;
+    transition: all .2s ease;
 }
 
 /* File upload drag-and-drop field */
@@ -104,9 +106,15 @@ body{
 /* When the user hovers over the field, with or without a file in hand */
 .file-dropping,
 .file-upload-wrapper:hover {
-    background-color: var(--color-seconday);
+    background-color: var(--color-seconday-darkened);
     border: var(--border-radius) dashed var(--color-accent-darkened);
 }
+.file-upload-wrapper:active {
+    background-color: var(--color-seconday-darkened-darkened);
+    transform: translateY(-0.25em);
+    transition: all .2s ease;
+}
+
 
 /* Leaflet map */
 .map-container {

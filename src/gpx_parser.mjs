@@ -40,7 +40,21 @@ function getGpxPoints(data) {
     */
 
     const points = [];
-    const tracks = data.trk;
+    // If location data is present, append it
+    let tracks = [];
+    if (data.trk) {
+        tracks = data.trk;
+    } else {
+        // If something went wrong with the location data, return a single point at 0 latitude and longtitude, so we don't return nothing
+        // Should probably fix this later
+        points.push({
+                lat: 0,
+                long: 0,
+                altitude: 0
+                });
+        return points;
+    }
+    
     
     for (const track of tracks) {
         const segments = track.trkseg;

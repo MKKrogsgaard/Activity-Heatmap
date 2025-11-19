@@ -66,6 +66,7 @@ function submitFiles(input) {
         const validPoints = []; // Will be [[lat, long, intensity], ...]
         const invalidPoints = [];
         parseResults.forEach(result => {
+            console.log(result);
             for (const point of result.points) {
                 // Check if the coords are finite, and if they are valid latitudes/longtitudes
                 if ((Number.isFinite(point.lat) && Number.isFinite(point.long)) &&

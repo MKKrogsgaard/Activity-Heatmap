@@ -76,6 +76,7 @@ async function handleFileUpload(request, response) {
 
         // FIT files
         if (ext === '.fit') {
+            console.log('Currently parsing FIT file: ' + filepath);
             try {
                 const parsedData = await parseFitFile(filepath); // Raw parsed FIT file object
                 const points = getFitPoints(parsedData, filepath); // Simplified array of points
@@ -98,18 +99,28 @@ async function handleFileUpload(request, response) {
         } 
         // GPX files
         else if (ext === '.gpx') {
+            console.log('Currently parsing GPX file: ' + filepath);
             try {
                 const parsedData = await parseGpxFile(filepath); // Raw parsed GPX file object
                 const points = getGpxPoints(parsedData);
+                // We are done parsing the file, delete it before returning
+                fs.unlink(filepath, (err) => {
+                    if (err) {
+                        console.error(err)
+                    }
+                });
                 return {file: filename, parsed: true, parsed_data: parsedData, points: points};
 
             } catch (err) {
+                // We are done parsing the file, delete it before returning
+                fs.unlink(filepath, (err) => {
+                    if (err) {
+                        console.error(err)
+                    }
+                });
                 return {file: filename, parsed: false, error: err.message};
             }
         }
-        
-
-        
     });
     const parseResults = await Promise.all(parsePromises);
 

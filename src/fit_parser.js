@@ -12,7 +12,6 @@ const fs = require('fs');
  * @returns {Promise<object>} Promise that resolves to the (raw) parsed FIT file
  */
 function parseFitFile(filepath) {
-    console.log('Currently parsing FIT file: ' + filepath);
     return new Promise((resolve, reject) => {
         fs.readFile(filepath, (err, content) => {
             if (err){
@@ -63,13 +62,14 @@ function getFitPoints(data) {
             records = lap.records;
             for (const record of records) {
                 if (typeof record.position_lat !== 'undefined' && typeof record.position_long !== 'undefined') { // Make sure the current record actually contains position data
-                points.push({
-                    lat: record.position_lat,
-                    long: record.position_long,
-                    timestamp: record.timeStamp || null,
-                    altitude: record.altitude || null
-                });
-            }
+                    points.push({
+                        lat: record.position_lat,
+                        long: record.position_long,
+                        altitude: record.altitude || null
+                    });
+                } else {
+                    console.warn("A FIT record had undefined position values!");
+                }
             }
         }
     }

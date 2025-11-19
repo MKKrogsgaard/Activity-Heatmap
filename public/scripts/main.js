@@ -99,6 +99,7 @@ function makeHeatMap(points) {
 
     if (!Array.isArray(points) || points.length == 0) {
         console.error('makeHeatMap: No points provided, or points not an Array!');
+        return
     }
 
     // Remove the existing map, if present
@@ -112,7 +113,6 @@ function makeHeatMap(points) {
 
     // Initialize map centered on a random point from the data
     initial_center = points[Math.floor(Math.random()*points.length)];
-    console.log('Initial map center: ', [initial_center[0], initial_center[1]]);
 
     leafletMap = L.map('map', {
         center: [initial_center[0], initial_center[1]],
@@ -123,12 +123,11 @@ function makeHeatMap(points) {
         maxZoom: 19,
         attribution: OSM_TILE_ATTRIBUTION
     }).addTo(leafletMap);
-    console.log('Leaflet map initialized!');
 
     // Add heatmap layer
     heatLayer = L.heatLayer(points, {
         radius: 5,
         blur: 5
     }).addTo(leafletMap);
-    console.log('Heatmap drawn!');
+    console.log('Heatmap drawn successfully!');
 }

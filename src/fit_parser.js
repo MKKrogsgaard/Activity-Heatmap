@@ -46,7 +46,7 @@ function parseFitFile(filepath) {
  */
 function getFitPoints(data) {
     /* 
-    We the gps points we are interested in are located in 
+    The gps points we are interested in are located in 
     {data} -> {activity} -> [sessions] -> {ith session} -> [laps] -> {jth lap}
 
     The structure of the parsed data is confusing AF 

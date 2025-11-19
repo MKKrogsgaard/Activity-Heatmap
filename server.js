@@ -8,6 +8,7 @@ const express = require('express');
 const fs = require('fs');
 const multer = require('multer');
 const crypto = require('crypto');
+const { getGpxPoints } = require('./src/gpx_parser.mjs');
 
 const {parseFitFile, getFitPoints} = require(path.join(__dirname, 'src/fit_parser.js'));
 const {parseGpxFile} = require(path.join(__dirname, 'src/gpx_parser.mjs'));
@@ -78,32 +79,32 @@ async function handleFileUpload(request, response) {
             try {
                 const parsedData = await parseFitFile(filepath); // Raw parsed FIT file object
                 const points = getFitPoints(parsedData, filepath); // Simplified array of points
-                // // We are done parsing the file, delete it before returning
-                // fs.unlink(filepath, (err) => {
-                //     if (err) {
-                //         console.error(err)
-                //     }
-                // });
+                // We are done parsing the file, delete it before returning
+                fs.unlink(filepath, (err) => {
+                    if (err) {
+                        console.error(err)
+                    }
+                });
                 return {file: filename, parsed: true, parsed_data: parsedData, points: points};
             } catch (err) {
-                // // We are done parsing the file, delete it before returning
-                // fs.unlink(filepath, (err) => {
-                //     if (err) {
-                //         console.error(err)
-                //     }
-                // });
-                return {file: filename, error: err};
+                // We are done parsing the file, delete it before returning
+                fs.unlink(filepath, (err) => {
+                    if (err) {
+                        console.error(err)
+                    }
+                });
+                return {file: filename, parsed: false, error: err.message};
             }
         } 
         // GPX files
         else if (ext === '.gpx') {
             try {
                 const parsedData = await parseGpxFile(filepath); // Raw parsed GPX file object
-                console.log(`Parsed data type: ${typeof parsedData}`);
-                console.log(parsedData);
+                const points = getGpxPoints(parsedData);
+                return {file: filename, parsed: true, parsed_data: parsedData, points: points};
 
             } catch (err) {
-                console.error('Failed to parse GPX file', filename, err);
+                return {file: filename, parsed: false, error: err.message};
             }
         }
         

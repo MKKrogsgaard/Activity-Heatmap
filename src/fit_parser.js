@@ -12,6 +12,7 @@ const fs = require('fs');
  * @returns {Promise<object>} Promise that resolves to the (raw) parsed FIT file
  */
 function parseFitFile(filepath) {
+    console.log('Currently parsing FIT file: ' + filepath);
     return new Promise((resolve, reject) => {
         fs.readFile(filepath, (err, content) => {
             if (err){
@@ -39,13 +40,13 @@ function parseFitFile(filepath) {
     });
 }
 /**
- * Takes in a raw parsed .fit file and returns an array containing all of the points in the GPS records of that file (i.e. a point-for-point record of the route the user took)
- * @param {<object>} data A (raw) parsed .fit file, the object returned by the parseFitFile() parser
- * @returns {<Array>{lat:number, long:number, timestamp?:string, altitude?: number, heart_rate?:number}} Array containing GPS points and some supplementary info
+ * Takes in a raw parsed FIT file and returns an array containing all of the points in the GPS records of that file (i.e. a point-for-point record of the route the user took)
+ * @param {<object>} data A (raw) parsed FIT file produced by parseFitFile()
+ * @returns {<Array>{lat:number, long:number, timestamp?:string, altitude?: number}} Array containing GPS points
  */
 function getFitPoints(data) {
     /* 
-    We the data we are interested in are located in 
+    We the gps points we are interested in are located in 
     {data} -> {activity} -> [sessions] -> {ith session} -> [laps] -> {jth lap}
 
     The structure of the parsed data is confusing AF 
@@ -54,19 +55,19 @@ function getFitPoints(data) {
     const points = [];
     sessions = data.activity.sessions;
 
-    // This is kind of ugly, maybe find some way to NOT make this a triple for loop? :P
+    // This is kind of ugly, maybe find some way to not make this a triple for loop? :P
     // Loop through the sessions, and the laps within each session, and extract the data we want
     for (const session of sessions) {
         const laps = session.laps;
         for (const lap of laps) {
-            for (const record of lap.records) {
+            records = lap.records;
+            for (const record of records) {
                 if (typeof record.position_lat !== 'undefined' && typeof record.position_long !== 'undefined') { // Make sure the current record actually contains position data
                 points.push({
                     lat: record.position_lat,
                     long: record.position_long,
                     timestamp: record.timeStamp || null,
-                    altitude: record.altitude || null,
-                    heart_rate: record.heart_rate || null
+                    altitude: record.altitude || null
                 });
             }
             }
